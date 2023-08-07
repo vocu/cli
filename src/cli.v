@@ -11,10 +11,10 @@ pub mut:
 	exec		fn (Cmd) = dummy
 	color 		Color
 mut:
-	subs []Cmd
+	cmds []Cmd
 	flags []Flag
 	flag_len int
-	sub_len int
+	cmd_len int
 }
 
 [noreturn]
@@ -32,23 +32,23 @@ pub fn new_cmd(name string) Cmd {
 	return c
 }
 
-pub fn (mut c Cmd) add_sub(sub Cmd) {
-	c.subs << sub
-	if sub.name.len > c.sub_len {
-		c.sub_len = sub.name.len
+pub fn (mut c Cmd) add_cmd(cmd Cmd) {
+	c.cmds << cmd
+	if cmd.name.len > c.cmd_len {
+		c.cmd_len = cmd.name.len
 	}
 }
 
 pub fn (mut c Cmd) parse(args []string) {
-	mut sub_idx := 0
-	mut sub_found := false
-	mut sub_args := []string{}
+	mut cmd_idx := 0
+	mut cmd_found := false
+	mut cmd_args := []string{}
 
 	if args.contains('-nocolor')
 	{
 		c.color.off()
-		for mut sub in c.subs {
-			sub.color.off()
+		for mut cmd in c.cmds {
+			cmd.color.off()
 		}
 	}
 		
@@ -124,28 +124,28 @@ pub fn (mut c Cmd) parse(args []string) {
 		} //END Parse flags
 		
 		// Parse Cmds
-		for idx, sub in c.subs {
-			if args[i] == sub.name {
-				sub_idx = idx
-				sub_found = true
-				sub_args = args[i..]
+		for idx, cmd in c.cmds {
+			if args[i] == cmd.name {
+				cmd_idx = idx
+				cmd_found = true
+				cmd_args = args[i..]
 				break outer
 			}
 		}
 
 		// Parse nearest Cmd matches
-		for idx, sub in c.subs {
-			if sub.name.starts_with(args[i]) {
-				if sub_found {
+		for idx, cmd in c.cmds {
+			if cmd.name.starts_with(args[i]) {
+				if cmd_found {
 					c.error("ambiguity for " + args[i])
 				} else {
-					sub_idx = idx
-					sub_found = true
-					sub_args = args[i..]
+					cmd_idx = idx
+					cmd_found = true
+					cmd_args = args[i..]
 				}
 			}
 		}
-		if sub_found {
+		if cmd_found {
 			break outer
 		}
 
@@ -171,8 +171,8 @@ pub fn (mut c Cmd) parse(args []string) {
 
 	c.exec(*c)
 
-	if sub_found {
-		c.subs[sub_idx].parse(sub_args)
+	if cmd_found {
+		c.cmds[cmd_idx].parse(cmd_args)
 	}
 }
 
