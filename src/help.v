@@ -31,7 +31,7 @@ fn (mut c Cmd) show_help() {
 	if c.cmds.len > 0 {
 		print(c.color.byellow + ' [command]' + c.color.end)
 	}
-	println(' ' + c.meta + '\n\nOptions:')
+	println(' ' + c.color.bgreen + c.meta + c.color.end + '\n\nOptions:')
 
 	for flag in c.flags {
 		println(c.color.bcyan + '  -' + flag.name + c.color.end + strings.repeat(32, c.flag_len - flag.name.len) + '   ' + flag.help.replace('\n', '\n' + strings.repeat(32, c.flag_len + 6)))
