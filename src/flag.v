@@ -38,14 +38,14 @@ pub fn (mut c Cmd) add_int(name string, help string) {
 
 pub fn (mut c Cmd) add_str(name string, help string) {
 	if name.len > c.flag_len {
-		c.flag_len name.len
+		c.flag_len = name.len
 	}
 	c.flags << Flag{.string, [], name, help, false, false, 0}
 }
 
 pub fn (mut c Cmd) add_bool(name string, help string) {
 	if name.len > c.flag_len {
-		c.flag_len name.len
+		c.flag_len = name.len
 	}
 	c.flags << Flag{.bool, [], name, help, false, false, 0}
 }
