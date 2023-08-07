@@ -6,7 +6,7 @@ pub struct Cmd {
 pub mut:
 	name        string
 	help		string
-	description string
+	info 		string
 	args        []string
 	max         int
 	min         int
