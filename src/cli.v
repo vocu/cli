@@ -9,7 +9,7 @@ pub mut:
 	max         int
 	min         int
 	exec		fn (Cmd) = dummy
-	color Color
+	color 		Color
 mut:
 	subs []Cmd
 	flags []Flag
@@ -160,9 +160,12 @@ pub fn (mut c Cmd) parse(args []string) {
 		c.error("missing argument(s)")
 	}
 
-	for flag in c.flags {
+	for mut flag in c.flags {
 		if flag.required && !flag.found {
 			c.error(" -" + flag.name + " is required")
+		}
+		if !flag.found {
+			flag.def()
 		}
 	}
 

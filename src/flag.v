@@ -20,6 +20,15 @@ struct Flag {
 	times int
 }
 
+pub fn (mut c Cmd) got(name string) bool {
+	for flag in c.flags {
+		if flag.name == name {
+			return flag.found
+		}
+	}
+	return false
+}
+
 pub fn (mut c Cmd) add_int(name string, help string) {
 	if name.len > c.flag_len {
 		c.flag_len = name.len
@@ -57,6 +66,16 @@ pub fn (mut c Cmd) require(name string) {
 	}
 }
 
+pub fn (mut f Flag) def() {
+	if f.mode == .int {
+		f.val << "0"
+	} else if f.mode == .bool  {
+		f.val << "false"
+	} else {
+		f.val << ''
+	} 
+}
+
 /*pub fn (mut c Cmd) set(name string, val string) {
 	for mut flag in c.flags {
 		if flag.name == name {
@@ -88,6 +107,46 @@ pub fn (c Cmd) get_ints(name string) []int {
 				}
 			}
 			return i
+		}
+	}
+	panic(name + " not found")
+}
+
+pub fn (c Cmd) get_str(name string) string {
+	for flag in c.flags {
+		if flag.name == name {
+			return flag.val[0]
+		}
+	}
+	panic(name + " not found")
+}
+
+pub fn (c Cmd) get_strs(name string) []string {
+	for flag in c.flags {
+		if flag.name == name {
+			return flag.val
+		}
+	}
+	panic(name + " not found")
+}
+
+pub fn (c Cmd) get_bool(name string) bool {
+	for flag in c.flags {
+		if flag.name == name {
+			if flag.val[0] == "true" {
+				return true
+			} else { 
+				return false
+			}
+		}
+	}
+	panic(name + " not found")
+}
+
+pub fn (c Cmd) get_bools(name string) int {
+	for flag in c.flags {
+		if flag.name == name {
+			return flag.times
 		}
 	}
 	panic(name + " not found")
