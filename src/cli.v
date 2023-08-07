@@ -8,6 +8,7 @@ pub mut:
 	args        []string
 	max         int
 	min         int
+	version		string
 	exec		fn (Cmd) = dummy
 	color 		Color
 mut:
@@ -29,6 +30,7 @@ fn dummy(c Cmd) {
 pub fn new_cmd(name string) Cmd {
 	mut c := Cmd{name: name, max: 0, min: 0}
 	c.add_bool("help", "show this help and exit")
+	c.add_bool("version", "show version and exit")
 	return c
 }
 
@@ -37,6 +39,7 @@ pub fn (mut c Cmd) add_cmd(cmd Cmd) {
 	if cmd.name.len > c.cmd_len {
 		c.cmd_len = cmd.name.len
 	}
+	c.cmds.last().version = c.version
 }
 
 pub fn (mut c Cmd) parse(args []string) {
@@ -64,6 +67,10 @@ pub fn (mut c Cmd) parse(args []string) {
 		
 		if args[i] == '-help' {
 			c.show_help()
+		}
+
+		if args[i] == '-version' {
+			c.show_version()
 		}
 
 		// Parse Flags
@@ -105,6 +112,9 @@ pub fn (mut c Cmd) parse(args []string) {
 				if c.flags[flag_idx].mode == .bool {
 						if c.flags[flag_idx].name == 'help' {
 							c.show_help()
+						}
+						if c.flags[flag_idx].name == 'version' {
+							c.show_version()
 						}
 						c.flags[flag_idx].val << "true"
 				} else {

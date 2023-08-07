@@ -8,6 +8,12 @@ struct Help {
 }
 
 [noreturn]
+fn (c Cmd) show_version() {
+	println(c.version)
+	exit(0)
+}
+
+[noreturn]
 fn (mut c Cmd) show_help() {
 
 	c.flags.sort(a.name < b.name)
