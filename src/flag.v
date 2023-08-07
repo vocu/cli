@@ -1,85 +1,93 @@
 module cli
 
-struct IntFlag {
-mut:
-	val  int
-	name string
-	required bool
-	found bool
+import strconv
+
+enum FlagMode {
+	bool
+	int
+	float
+	string
 }
 
-pub fn (mut c Cmd) new_int(default_val int, name string, help string, required bool) {
-	c.int_flags << IntFlag{default_val, name, required, false}
-	c.helps << Help{name, help}
-	if name.len > c.longest {
-		c.longest = name.len
+struct Flag {
+	mut:
+	mode FlagMode
+	val  []string
+	name string
+	help string
+	required bool
+	found bool
+	times int
+}
+
+pub fn (mut c Cmd) add_int(name string, help string) {
+	if name.len > c.flag_len {
+		c.flag_len = name.len
+	}
+	c.flags << Flag{.int, [], name, help, false, false, 0}
+}
+
+pub fn (mut c Cmd) add_str(name string, help string) {
+	if name.len > c.flag_len {
+		c.flag_len name.len
+	}
+	c.flags << Flag{.string, [], name, help, false, false, 0}
+}
+
+pub fn (mut c Cmd) add_bool(name string, help string) {
+	if name.len > c.flag_len {
+		c.flag_len name.len
+	}
+	c.flags << Flag{.bool, [], name, help, false, false, 0}
+}
+
+pub fn (mut c Cmd) set_def(name string, val string) {
+	for mut flag in c.flags {
+		if flag.name == name {
+			flag.val << val
+		}
 	}
 }
+
+pub fn (mut c Cmd) require(name string) {
+	for mut flag in c.flags {
+		if flag.name == name {
+			flag.required = true
+		}
+	}
+}
+
+/*pub fn (mut c Cmd) set(name string, val string) {
+	for mut flag in c.flags {
+		if flag.name == name {
+			flag.val << val
+			flag.found = true
+			flag.times = flag.times + 1
+		}
+	}
+}*/
 
 pub fn (c Cmd) get_int(name string) int {
-	for int_flag in c.int_flags {
-		if int_flag.name == name {
-			return int_flag.val
+	for flag in c.flags {
+		if flag.name == name {
+			return strconv.atoi(flag.val[0]) or { 
+				c.error('invalid type for -' + name) 
+			}
 		}
 	}
 	panic(name + " not found")
 }
 
-struct StrFlag {
-mut:
-	val  string
-	name string
-	required bool
-	found bool
-}
-
-pub fn (mut c Cmd) new_str(default_val string, name string, help string, required bool) {
-	c.str_flags << StrFlag{default_val, name, required, false}
-	c.helps << Help{name, help}
-	if name.len > c.longest {
-		c.longest = name.len
-	}
-}
-
-pub fn (c Cmd) get_str(name string) string {
-	for str_flag in c.str_flags {
-		if str_flag.name == name {
-			return str_flag.val
-		}
-	}
-	panic(name + " not found")
-}
-
-struct BoolFlag {
-mut:
-	val  bool
-	times int
-	name string
-	required bool
-	found bool
-}
-
-pub fn (mut c Cmd) new_bool(default_val bool, name string, help string, required bool) {
-	c.bool_flags << BoolFlag{default_val, 0, name, required, false}
-	c.helps << Help{name, help}
-	if name.len > c.longest {
-		c.longest = name.len
-	}
-}
-
-pub fn (c Cmd) get_bool(name string) bool {
-	for bool_flag in c.bool_flags {
-		if bool_flag.name == name {
-			return bool_flag.val
-		}
-	}
-	panic(name + " not found")
-}
-
-pub fn (c Cmd) get_bools(name string) int {
-	for bool_flag in c.bool_flags {
-		if bool_flag.name == name {
-			return bool_flag.times
+pub fn (c Cmd) get_ints(name string) []int {
+	for flag in c.flags {
+		if flag.name == name {
+			mut i := []int{cap: flag.val.len}
+			for val in flag.val {
+				i <<  strconv.atoi(val) or { 
+					c.error('invalid type for -' + name) 
+				}
+			}
+			return i
 		}
 	}
 	panic(name + " not found")
