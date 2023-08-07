@@ -8,7 +8,7 @@ struct Help {
 }
 
 [noreturn]
-fn (mut c Command) show_help() {
+fn (mut c Cmd) show_help() {
 
 	c.helps.sort(a.name < b.name)
 

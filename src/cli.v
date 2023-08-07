@@ -2,7 +2,7 @@ module cli
 
 import strconv
 
-pub struct Command {
+pub struct Cmd {
 pub mut:
 	name        string
 	help		string
@@ -10,10 +10,10 @@ pub mut:
 	args        []string
 	max         int
 	min         int
-	exec		fn (Command) = dummy
+	exec		fn (Cmd) = dummy
 	color Color
 mut:
-	subs []Command
+	subs []Cmd
 	int_flags []IntFlag
 	str_flags []StrFlag
 	bool_flags []BoolFlag
@@ -23,30 +23,30 @@ mut:
 }
 
 [noreturn]
-fn (c Command) error(s string) {
+fn (c Cmd) error(s string) {
 	eprintln(c.color.bred + "error: " + s + c.color.end)
 	exit(1)
 }
 
-fn dummy(c Command) {
+fn dummy(c Cmd) {
 
 }
 
 
-pub fn new_command(name string) Command {
-	mut c := Command{name: name, max: 0, min: 0}
+pub fn new_cmd(name string) Cmd {
+	mut c := Cmd{name: name, max: 0, min: 0}
 	c.new_bool(false, "help", "show help", false)
 	return c
 }
 
-pub fn (mut c Command) add_sub(sub Command) {
+pub fn (mut c Cmd) add_sub(sub Cmd) {
 	c.subs << sub
 	if sub.name.len > c.longest_sub {
 		c.longest_sub = sub.name.len
 	}
 }
 
-pub fn (mut c Command) parse(args []string) {
+pub fn (mut c Cmd) parse(args []string) {
 	mut potential_sub_idx := 0
 	mut potential_sub_found := false
 	mut potential_sub_args := []string{}
@@ -198,7 +198,7 @@ pub fn (mut c Command) parse(args []string) {
 			c.error("invalid option " + args[i])
 		} //END Parse flags
 		
-		// Parse Commands
+		// Parse Cmds
 		for idx, sub in c.subs {
 			if args[i] == sub.name {
 				potential_sub_idx = idx
@@ -208,7 +208,7 @@ pub fn (mut c Command) parse(args []string) {
 			}
 		}
 
-		// Parse nearest Command matches
+		// Parse nearest Cmd matches
 		for idx, sub in c.subs {
 			if sub.name.starts_with(args[i]) {
 				if potential_sub_found {
