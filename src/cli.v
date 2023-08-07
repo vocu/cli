@@ -22,7 +22,7 @@ mut:
 const max_int = 2147483647
 
 [noreturn]
-fn (c Cmd) error(s string) {
+pub fn (c Cmd) error(s string) {
 	eprintln(c.color.bred + "error: " + s + c.color.end)
 	exit(1)
 }
