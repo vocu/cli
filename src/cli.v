@@ -5,6 +5,7 @@ pub mut:
 	name        string
 	help		string
 	info 		string
+	meta		string
 	args        []string
 	max         int
 	min         int
@@ -157,6 +158,10 @@ pub fn (mut c Cmd) parse(args []string) {
 		}
 		if cmd_found {
 			break outer
+		}
+
+		if c.max == 0 && c.cmds.len > 0{
+			c.error("command not found")
 		}
 
 		// Parse as Argument
