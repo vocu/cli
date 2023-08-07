@@ -19,6 +19,8 @@ mut:
 	cmd_len int
 }
 
+const max_int = 2147483647
+
 [noreturn]
 fn (c Cmd) error(s string) {
 	eprintln(c.color.bred + "error: " + s + c.color.end)
@@ -29,7 +31,7 @@ fn dummy(c Cmd) {
 }
 
 pub fn new_cmd(name string) Cmd {
-	mut c := Cmd{name: name, max: 0, min: 0}
+	mut c := Cmd{name: name, max: max_int, min: 0}
 	c.add_bool("help", "show this help and exit")
 	c.add_bool("version", "show version and exit")
 	return c
