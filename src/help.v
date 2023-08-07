@@ -19,6 +19,10 @@ fn (mut c Cmd) show_help() {
 	c.flags.sort(a.name < b.name)
 	c.cmds.sort(a.name < b.name)
 
+	if c.max > 0 && c.meta == '' {
+		c.meta = "<argument>"
+	}
+
 	if !c.info.is_blank() {
 		println(c.info)
 	}
@@ -27,10 +31,7 @@ fn (mut c Cmd) show_help() {
 	if c.cmds.len > 0 {
 		print(c.color.byellow + ' [command]' + c.color.end)
 	}
-	if c.max > 0 {
-		print(c.color.bmagenta + ' [argument]' + c.color.end)
-	}
-	println('\n\nOptions:')
+	println(' ' + c.meta + '\n\nOptions:')
 
 	for flag in c.flags {
 		println(c.color.bcyan + '  -' + flag.name + c.color.end + strings.repeat(32, c.flag_len - flag.name.len) + '   ' + flag.help.replace('\n', '\n' + strings.repeat(32, c.flag_len + 6)))
