@@ -41,6 +41,8 @@ fn (mut c Color) on() {
 	c.bmagenta  = '\x1b[95m'
 	c.bcyan     = '\x1b[96m'
 	c.bwhite    = '\x1b[97m'
+
+	c. end		= '\x1b[0m'
 }
 
 fn (mut c Color) off() {
@@ -61,4 +63,6 @@ fn (mut c Color) off() {
 	c.bmagenta  = ''
 	c.bcyan     = ''
 	c.bwhite    = ''
+
+	c. end		= ''
 }
